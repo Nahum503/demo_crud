@@ -28,6 +28,33 @@ public class ConexionCRUD {
         } catch (ClassNotFoundException |SQLException e) {
             System.out.println("Conexión fallida! Error! " + e.getMessage());
         }
-        
+         }
+    public Connection getConnection(){
+        return conexion;
     }
-}
+    
+    public void guardarRegistros(String tabla, String campoTabla, String valoresCampos){
+        //cargar la conexion 
+        ConexionCRUD conectar = new ConexionCRUD();
+        Connection cone = conectar.getConnection();
+        try {
+            //definir la setencia sql
+            String sqlQueryStmt = "INSERT INTO "+tabla+" ("+campoTabla+") VALUES ("+valoresCampos + ");";
+            // establecemos la comunicacion entre nuetra aplicacion java y la base de datos
+            Statement stmt; //Envia sentencias sql a la base de datos}
+            stmt= cone.createStatement();
+           stmt.executeUpdate(sqlQueryStmt);
+           //cerrar el Statement y la conexion se cieran en orden de como se ha abierto
+           stmt.close();
+           cone.close();
+            System.out.println("Registrado guardado correctamente :)");
+                            
+    
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+    }
+    
+    }
+    
+
