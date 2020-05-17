@@ -54,7 +54,85 @@ public class ConexionCRUD {
             System.out.println(e.getMessage());
         }
     }
+     public void actualizarEliminarRegistro(String tabla, String condicion, String valoresCamposNuevos){
+            //cargar conexion
+            ConexionCRUD conectar = new ConexionCRUD();
+            Connection cone = conectar.getConnection();
+            try {
+                Statement stmt;
+                String sqlQueryStml;
+                //Verificar que valorescamposnuevos  venga vacia y asi al borrar o actualizar registro
+                if (valoresCamposNuevos.isEmpty()) {
+                    sqlQueryStml = "DELETE FROM "+tabla+" WHERE "+condicion+";";
+                    
+                }else{
+                    sqlQueryStml = " UPDATE "+tabla+ " SET "+valoresCamposNuevos+ " WHERE "+condicion+";";
+                }
+                stmt= cone.createStatement();
+           stmt.executeUpdate(sqlQueryStml);
+           stmt.close();
+           cone.close();
+                
+            } catch (Exception ex) {
+                System.out.println("Ha ocurrido el siguiente error: "+ ex.getMessage());
+            }
+        }
+        
+        public void desplegarRegistros(String tablaBuscar, String camposBuscar, String condicionBuscar)throws SQLException {
+              ConexionCRUD conectar = new ConexionCRUD();
+            Connection cone = conectar.getConnection();
+            try {
+                Statement stmt;
+                String sqlQueryStml;
+                //Verificar que valorescamposnuevos  venga vacia y asi al borrar o actualizar registro
+                if (condicionBuscar.equals("")) {
+                    sqlQueryStml = "SELECT "+camposBuscar+" FROM "+tablaBuscar+";";
+                    
+                }else{
+                    sqlQueryStml = "SELECT "+camposBuscar+ " FROM "+tablaBuscar+ " WHERE "+condicionBuscar;
+                }
+                stmt= cone.createStatement();
+           stmt.executeQuery(sqlQueryStml);
+           //le indicamos que ejecute la consulta de la tabla y le pasamos por argumento nuestra sentencia
+                try(ResultSet miResultSet = stmt.executeQuery(sqlQueryStml)){
+                    if (miResultSet.next()) {//Ubica el curso de la primera fila dela tabla
+                        ResultSetMetaData metaData = miResultSet.getMetaData();
+                        int numColumnas = metaData.getColumnCount();//obtiene el numero de columnas de la consulta
+                        System.out.println("<< REGISTRO ALMACENADO >>");
+                        System.out.println();
+                        
+                        for (int i = 1; i <= numColumnas; i++) {
+                            System.out.printf("%-20s\t", metaData.getColumnName(i));
+                        }
+                        System.out.println();
+                        do {                            
+                            for (int i = 1; i <=numColumnas; i++) {
+                                System.out.printf("%-20s\t", miResultSet.getObject(i));
+                            }
+                            System.out.println();
+                            
+                        } while (miResultSet.next());
+                        System.out.println();
+                        
+                        
+                        
+                    } else {
+                        System.out.println("No se han encontrado registros");
+                    }
+                    miResultSet.close();
+                    }finally{
+                    stmt.close();
+                    cone.close();
+                }
+                } catch (SQLException ex) {
+                    System.out.println("Ha ocurrido al error: "+ ex.getMessage());
+                }
+            
+            
+        }
+}
+
     
-    }
+    
     
 
